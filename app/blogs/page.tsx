@@ -20,7 +20,7 @@ export default async function BlogsPage() {
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
       <main className="flex-1 pb-16">
-        <div className="container py-12 md:py-20">
+        <div className="container px-4 md:px-6 py-12 md:py-20">
           <div className="space-y-4 text-center mb-14 md:mb-16">
             <h1 className="text-4xl md:text-5xl font-bold text-balance">Blog</h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">

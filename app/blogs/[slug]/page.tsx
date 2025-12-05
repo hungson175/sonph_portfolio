@@ -85,7 +85,7 @@ export default async function BlogPostPage({
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
       <main className="flex-1">
-        <article className="container py-8 md:py-12 max-w-4xl">
+        <article className="container px-4 md:px-6 py-8 md:py-12 max-w-4xl mx-auto">
           {/* Breadcrumb navigation */}
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
