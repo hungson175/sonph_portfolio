@@ -1,0 +1,30 @@
+# Dependencies
+node_modules
+
+# Next.js
+.next
+out
+
+# Environment
+.env.local
+.env*.local
+
+# Build
+build
+dist
+
+# IDE
+.idea
+.vscode
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Playwright
+.playwright-mcp
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
