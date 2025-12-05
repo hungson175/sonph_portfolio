@@ -34,9 +34,9 @@ export function ExperienceSection() {
   ]
 
   return (
-    <section id="experience" className="py-20 px-4 bg-muted/30">
+    <section id="experience" className="py-12 md:py-20 px-4 bg-muted/30">
       <div className="max-w-6xl mx-auto">
-        <div className="space-y-4 text-center mb-12">
+        <div className="space-y-4 text-center mb-14 md:mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-balance">Experience</h2>
           <p className="text-muted-foreground text-lg">My professional journey over the past two decades</p>
         </div>

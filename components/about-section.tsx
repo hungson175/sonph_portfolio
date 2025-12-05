@@ -26,9 +26,9 @@ export function AboutSection() {
   ]
 
   return (
-    <section id="about" className="py-20 px-4">
+    <section id="about" className="py-12 md:py-20 px-4">
       <div className="max-w-6xl mx-auto">
-        <div className="space-y-4 text-center mb-12">
+        <div className="space-y-4 text-center mb-14 md:mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-balance">About Me</h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             A seasoned software engineer with a passion for building innovative solutions
@@ -45,8 +45,8 @@ export function AboutSection() {
                     <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Icon className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="font-semibold">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                    <h3 className="font-semibold text-lg">{item.title}</h3>
+                    <p className="text-base text-muted-foreground leading-relaxed">{item.description}</p>
                   </div>
                 </CardContent>
               </Card>

@@ -17,11 +17,11 @@ export default async function BlogsPage() {
     .order("created_at", { ascending: false })
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <main className="flex-1">
-        <div className="container py-12 md:py-16">
-          <div className="space-y-4 text-center mb-12">
+      <main className="flex-1 pb-16">
+        <div className="container py-12 md:py-20">
+          <div className="space-y-4 text-center mb-14 md:mb-16">
             <h1 className="text-4xl md:text-5xl font-bold text-balance">Blog</h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Thoughts on software engineering, AI/ML, and technology
@@ -55,7 +55,7 @@ export default async function BlogsPage() {
                       </div>
                     )}
                     <CardHeader>
-                      <CardTitle className="line-clamp-2 text-balance">{blog.title}</CardTitle>
+                      <CardTitle className="line-clamp-2 text-balance text-xl">{blog.title}</CardTitle>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Calendar className="h-4 w-4" />
                         {new Date(blog.created_at).toLocaleDateString("en-US", {

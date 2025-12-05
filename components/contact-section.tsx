@@ -4,16 +4,16 @@ import { Mail, Github, Facebook } from "lucide-react"
 
 export function ContactSection() {
   return (
-    <section id="contact" className="py-20 px-4 bg-muted/30">
+    <section id="contact" className="py-12 md:py-20 px-4 bg-muted/30">
       <div className="max-w-4xl mx-auto">
-        <div className="space-y-4 text-center mb-12">
+        <div className="space-y-4 text-center mb-14 md:mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-balance">Get In Touch</h2>
           <p className="text-muted-foreground text-lg">Let's discuss how we can work together</p>
         </div>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex flex-col items-center gap-6">
+            <div className="flex flex-col items-center gap-8">
               <p className="text-center text-muted-foreground leading-relaxed max-w-2xl">
                 I'm always interested in hearing about new opportunities, collaborations, or just having a conversation
                 about technology and software engineering.

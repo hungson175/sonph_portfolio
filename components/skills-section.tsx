@@ -22,9 +22,9 @@ export function SkillsSection() {
   ]
 
   return (
-    <section id="skills" className="py-20 px-4">
+    <section id="skills" className="py-12 md:py-20 px-4 bg-muted/30">
       <div className="max-w-6xl mx-auto">
-        <div className="space-y-4 text-center mb-12">
+        <div className="space-y-4 text-center mb-14 md:mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-balance">Skills & Technologies</h2>
           <p className="text-muted-foreground text-lg">Technical expertise across multiple domains</p>
         </div>
@@ -36,7 +36,7 @@ export function SkillsSection() {
                 <h3 className="font-semibold text-lg mb-4">{category.category}</h3>
                 <div className="flex flex-wrap gap-2">
                   {category.skills.map((skill, i) => (
-                    <Badge key={i} variant="secondary" className="px-3 py-1">
+                    <Badge key={i} variant="secondary">
                       {skill}
                     </Badge>
                   ))}
