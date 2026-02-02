@@ -4,21 +4,30 @@ set -e
 
 APP_DIR="/home/hungson175/dev/SonPH/my-portfolio/frontend"
 
-echo "=== Stopping dev/prod servers ==="
+echo "=== Stopping frontend (backend stays up for SSG build) ==="
 systemctl --user stop portfolio-frontend 2>/dev/null || true
-systemctl --user stop portfolio-backend 2>/dev/null || true
 sleep 1
 fuser -k 3336/tcp 2>/dev/null || true
-fuser -k 17064/tcp 2>/dev/null || true
 sleep 1
+
+echo "=== Ensuring backend is running ==="
+systemctl --user start portfolio-backend 2>/dev/null || true
+sleep 2
+
+if ! systemctl --user is-active --quiet portfolio-backend; then
+  echo "=== ERROR: Backend not running, SSG build will fail ==="
+  journalctl --user -u portfolio-backend --no-pager -n 20
+  exit 1
+fi
+echo "=== Backend running on port 17064 ==="
 
 echo "=== Cleaning cache & rebuilding frontend ==="
 rm -rf "$APP_DIR/.next"
 cd "$APP_DIR"
 npm run build
 
-echo "=== Starting backend service ==="
-systemctl --user start portfolio-backend
+echo "=== Restarting backend service ==="
+systemctl --user restart portfolio-backend
 sleep 2
 
 if systemctl --user is-active --quiet portfolio-backend; then
