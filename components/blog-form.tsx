@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -58,7 +57,6 @@ export function BlogForm({ userId, blog }: BlogFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
@@ -70,17 +68,20 @@ export function BlogForm({ userId, blog }: BlogFormProps) {
         content,
         cover_image: coverImage || null,
         published,
-        author_id: userId,
       }
 
-      if (blog) {
-        const { error } = await supabase.from("blogs").update(blogData).eq("id", blog.id)
+      const url = blog ? `/api/blogs/${blog.id}` : "/api/blogs"
+      const method = blog ? "PUT" : "POST"
 
-        if (error) throw error
-      } else {
-        const { error } = await supabase.from("blogs").insert(blogData)
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(blogData),
+      })
 
-        if (error) throw error
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || "Failed to save")
       }
 
       router.push("/admin")

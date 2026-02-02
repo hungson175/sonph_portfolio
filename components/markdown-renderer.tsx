@@ -4,16 +4,31 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
 import rehypeHighlight from "rehype-highlight"
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useRef, useState, useCallback, isValidElement, type ReactNode } from "react"
 import mermaid from "mermaid"
 import { Check, Copy } from "lucide-react"
 import "highlight.js/styles/github-dark.css"
 
-// Initialize mermaid
+// Recursively extract plain text from React children.
+// rehype-highlight wraps code content in <span> elements for syntax coloring,
+// so String(children) produces "[object Object]". This walks the tree instead.
+function extractText(node: ReactNode): string {
+  if (typeof node === "string") return node
+  if (typeof node === "number") return String(node)
+  if (node == null || typeof node === "boolean") return ""
+  if (Array.isArray(node)) return node.map(extractText).join("")
+  if (isValidElement(node)) {
+    return extractText(node.props.children)
+  }
+  return ""
+}
+
+// Initialize mermaid with fontFamily to ensure consistent rendering
 mermaid.initialize({
   startOnLoad: false,
-  theme: "default",
+  theme: "dark",
   securityLevel: "loose",
+  fontFamily: "sans-serif",
 })
 
 interface MermaidDiagramProps {
@@ -43,7 +58,7 @@ function MermaidDiagram({ chart }: MermaidDiagramProps) {
   return (
     <div
       ref={containerRef}
-      className="my-6 overflow-x-auto flex justify-center bg-white dark:bg-gray-900 rounded-lg p-4"
+      className="my-6 overflow-x-auto flex justify-center bg-[#0d1117] rounded-lg p-4 border border-border"
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   )
@@ -135,10 +150,10 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
         pre: ({ children }) => {
           return <>{children}</>
         },
-        code: ({ className, children, ...props }) => {
+        code: ({ className, children }) => {
           const match = /language-(\w+)/.exec(className || "")
           const language = match ? match[1] : ""
-          const codeString = String(children).replace(/\n$/, "")
+          const codeString = extractText(children).replace(/\n$/, "")
 
           // Handle mermaid diagrams
           if (language === "mermaid") {
@@ -148,7 +163,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
           const isInline = !className && !codeString.includes('\n')
           if (isInline) {
             return (
-              <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary" {...props}>
+              <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary">
                 {children}
               </code>
             )

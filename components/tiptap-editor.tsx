@@ -26,7 +26,6 @@ import {
   Link as LinkIcon,
   Code2,
 } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
 
 const lowlight = createLowlight(common)
 
@@ -78,28 +77,17 @@ export function TiptapEditor({ content, onChange, placeholder = "Write your cont
   const addImage = useCallback(async (file: File) => {
     if (!editor) return
 
-    const supabase = createClient()
-    const fileExt = file.name.split(".").pop()
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-    const filePath = `blog-images/${fileName}`
+    const formData = new FormData()
+    formData.append("file", file)
 
-    const { data, error } = await supabase.storage
-      .from("images")
-      .upload(filePath, file, {
-        cacheControl: "3600",
-        upsert: false,
-      })
-
-    if (error) {
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData })
+      if (!res.ok) throw new Error("Upload failed")
+      const { url } = await res.json()
+      editor.chain().focus().setImage({ src: url }).run()
+    } catch (error) {
       console.error("Upload error:", error)
-      alert("Failed to upload image. Make sure Supabase Storage is configured.")
-      return
-    }
-
-    const { data: urlData } = supabase.storage.from("images").getPublicUrl(filePath)
-
-    if (urlData?.publicUrl) {
-      editor.chain().focus().setImage({ src: urlData.publicUrl }).run()
+      alert("Failed to upload image.")
     }
   }, [editor])
 

@@ -2,10 +2,12 @@ import { HeroSection } from "@/components/hero-section"
 import { AboutSection } from "@/components/about-section"
 import { ExperienceSection } from "@/components/experience-section"
 import { SkillsSection } from "@/components/skills-section"
+import { ProjectsSection } from "@/components/projects-section"
 import { AchievementsSection } from "@/components/achievements-section"
 import { ContactSection } from "@/components/contact-section"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
+import { ChatBubble } from "@/components/chat-bubble"
 
 export default function Home() {
   return (
@@ -13,6 +15,7 @@ export default function Home() {
       <SiteHeader />
       <main>
         <HeroSection />
+        <ProjectsSection />
         <AboutSection />
         <ExperienceSection />
         <SkillsSection />
@@ -20,6 +23,7 @@ export default function Home() {
         <ContactSection />
       </main>
       <SiteFooter />
+      <ChatBubble />
     </div>
   )
 }

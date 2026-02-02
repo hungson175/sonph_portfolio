@@ -1,15 +1,22 @@
-import { createClient } from "@/lib/supabase/server"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { BlogForm } from "@/components/blog-form"
 
-export default async function NewBlogPage() {
-  const supabase = await createClient()
+const API_BASE = process.env.API_BASE || "http://localhost:17064"
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-  if (error || !user) {
+export default async function NewBlogPage() {
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore.toString()
+
+  const meRes = await fetch(`${API_BASE}/api/auth/me`, {
+    headers: { cookie: cookieHeader },
+    cache: "no-store",
+  })
+  if (!meRes.ok) {
+    redirect("/auth/login")
+  }
+  const user = await meRes.json()
+  if (!user?.id) {
     redirect("/auth/login")
   }
 

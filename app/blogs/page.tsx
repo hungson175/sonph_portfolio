@@ -1,20 +1,29 @@
-import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import Link from "next/link"
 import { Calendar } from "lucide-react"
 
-export const revalidate = 60 // Revalidate every 60 seconds
+export const revalidate = 60
+
+const API_BASE = process.env.API_BASE || "http://localhost:17064"
+
+interface BlogRow {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string | null
+  cover_image: string | null
+  published: number
+  author_id: string | null
+  created_at: string
+  updated_at: string
+}
 
 export default async function BlogsPage() {
-  const supabase = await createClient()
-
-  const { data: blogs, error } = await supabase
-    .from("blogs")
-    .select("*")
-    .eq("published", true)
-    .order("created_at", { ascending: false })
+  const res = await fetch(`${API_BASE}/api/blogs`, { next: { revalidate: 60 } })
+  const blogs: BlogRow[] = await res.json()
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -28,19 +37,13 @@ export default async function BlogsPage() {
             </p>
           </div>
 
-          {error && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Unable to load blogs. Please try again later.</p>
-            </div>
-          )}
-
-          {!error && blogs && blogs.length === 0 && (
+          {blogs.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">No blog posts yet. Check back soon!</p>
             </div>
           )}
 
-          {!error && blogs && blogs.length > 0 && (
+          {blogs.length > 0 && (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {blogs.map((blog) => (
                 <Link key={blog.id} href={`/blogs/${blog.slug}`}>

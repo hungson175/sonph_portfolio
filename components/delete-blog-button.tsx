@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
 import {
@@ -22,17 +21,14 @@ export function DeleteBlogButton({ blogId }: { blogId: string }) {
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = async () => {
-    const supabase = createClient()
     setIsDeleting(true)
 
     try {
-      const { error } = await supabase.from("blogs").delete().eq("id", blogId)
-
-      if (error) throw error
-
+      const res = await fetch(`/api/blogs/${blogId}`, { method: "DELETE" })
+      if (!res.ok) throw new Error("Delete failed")
       router.refresh()
     } catch (error) {
-      console.error("[v0] Error deleting blog:", error)
+      console.error("Error deleting blog:", error)
     } finally {
       setIsDeleting(false)
     }

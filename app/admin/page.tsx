@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,22 +10,42 @@ import { LogoutButton } from "@/components/logout-button"
 
 export const revalidate = 0
 
-export default async function AdminPage() {
-  const supabase = await createClient()
+const API_BASE = process.env.API_BASE || "http://localhost:17064"
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser()
-  if (userError || !user) {
+interface BlogRow {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string | null
+  cover_image: string | null
+  published: number
+  author_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export default async function AdminPage() {
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore.toString()
+
+  const meRes = await fetch(`${API_BASE}/api/auth/me`, {
+    headers: { cookie: cookieHeader },
+    cache: "no-store",
+  })
+  if (!meRes.ok) {
+    redirect("/auth/login")
+  }
+  const user = await meRes.json()
+  if (!user?.id) {
     redirect("/auth/login")
   }
 
-  const { data: blogs } = await supabase
-    .from("blogs")
-    .select("*")
-    .eq("author_id", user.id)
-    .order("created_at", { ascending: false })
+  const blogsRes = await fetch(`${API_BASE}/api/admin/blogs`, {
+    headers: { cookie: cookieHeader },
+    cache: "no-store",
+  })
+  const blogs: BlogRow[] = await blogsRes.json()
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -50,7 +70,7 @@ export default async function AdminPage() {
           <p className="text-muted-foreground">Manage and edit your blog posts</p>
         </div>
 
-        {blogs && blogs.length === 0 && (
+        {blogs.length === 0 && (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <p className="text-muted-foreground mb-4">No blog posts yet</p>
@@ -64,7 +84,7 @@ export default async function AdminPage() {
           </Card>
         )}
 
-        {blogs && blogs.length > 0 && (
+        {blogs.length > 0 && (
           <div className="grid gap-4">
             {blogs.map((blog) => (
               <Card key={blog.id}>

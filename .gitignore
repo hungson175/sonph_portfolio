@@ -6,6 +6,7 @@ node_modules
 out
 
 # Environment
+.env
 .env.local
 .env*.local
 
@@ -23,6 +24,11 @@ Thumbs.db
 
 # Playwright
 .playwright-mcp
+
+# Database
+*.db
+*.db-wal
+*.db-shm
 
 # Debug
 npm-debug.log*
