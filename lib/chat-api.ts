@@ -1,5 +1,5 @@
 export interface ChatSSEEvent {
-  type: "thinking" | "content" | "error" | "done" | "suggestions"
+  type: "thinking" | "content" | "content_delta" | "error" | "done" | "suggestions"
   text?: string
   suggestions?: string[]
 }
@@ -87,6 +87,9 @@ export async function* streamChatResponse(
             break
           case "content":
             yield { type: "content", text: parsed.text }
+            break
+          case "content_delta":
+            yield { type: "content_delta", text: parsed.text }
             break
           case "suggestions":
             yield { type: "suggestions", suggestions: parsed.suggestions }

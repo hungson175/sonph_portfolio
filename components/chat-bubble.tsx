@@ -223,6 +223,7 @@ function MessageBubble({
         </Avatar>
       )}
       <div className={`max-w-[80%] flex flex-col gap-1 ${isUser ? "items-end" : ""}`}>
+        {isThinking && !hasThinking && <TypingIndicator />}
         {hasThinking && (
           <ThinkingBox
             steps={message.thinkingSteps!}
@@ -444,6 +445,16 @@ export function ChatBubble() {
                 )
               )
               break
+            case "content_delta":
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, content: (m.content || "") + (event.text ?? "") }
+                    : m
+                )
+              )
+              scrollToBottom()
+              break
             case "suggestions":
               if (event.suggestions?.length) {
                 setMessages((prev) =>
@@ -491,7 +502,7 @@ export function ChatBubble() {
 
   const panelClasses = isMobile
     ? "fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"
-    : "fixed bottom-24 right-6 z-50 flex flex-col w-[400px] h-[560px] rounded-2xl border bg-background shadow-xl overflow-hidden"
+    : "fixed bottom-24 right-6 z-50 flex flex-col w-[440px] h-[640px] rounded-2xl border bg-background shadow-xl overflow-hidden"
 
   return (
     <>
