@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { MessageCircle, X, Send, Square, ChevronDown } from "lucide-react"
+import { MessageCircle, X, Send, Square, ChevronDown, Copy, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -167,6 +167,31 @@ function ThinkingBox({
   )
 }
 
+function CodeBlock({ children }: { children: React.ReactNode }) {
+  const [copied, setCopied] = useState(false)
+  const text = String(children).replace(/\n$/, "")
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
+  return (
+    <div className="relative group my-1.5 rounded-lg bg-background/30 overflow-hidden">
+      <button
+        onClick={handleCopy}
+        className="absolute top-1.5 right-1.5 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background/80"
+      >
+        {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+      </button>
+      <pre className="overflow-x-auto p-2.5 text-xs font-mono leading-relaxed">
+        <code>{text}</code>
+      </pre>
+    </div>
+  )
+}
+
 function ChatMarkdown({ content }: { content: string }) {
   return (
     <ReactMarkdown
@@ -187,11 +212,18 @@ function ChatMarkdown({ content }: { content: string }) {
             {children}
           </a>
         ),
-        code: ({ children }) => (
-          <code className="bg-background/20 px-1 py-0.5 rounded text-xs font-mono">
-            {children}
-          </code>
-        ),
+        pre: ({ children }) => <>{children}</>,
+        code: ({ className, children }) => {
+          const isBlock = className?.startsWith("language-") || String(children).includes("\n")
+          if (!isBlock) {
+            return (
+              <code className="bg-background/20 px-1 py-0.5 rounded text-xs font-mono">
+                {children}
+              </code>
+            )
+          }
+          return <CodeBlock>{children}</CodeBlock>
+        },
       }}
     >
       {content}
