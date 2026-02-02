@@ -11,7 +11,7 @@ export function HeroSection() {
           <div className="space-y-2">
             <p className="text-muted-foreground text-lg">Hello, I'm</p>
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-balance">Son Pham</h1>
-            <p className="text-2xl md:text-3xl text-muted-foreground">Senior Software Engineer</p>
+            <p className="text-2xl md:text-3xl text-muted-foreground">Senior AI Engineer</p>
           </div>
 
           <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">

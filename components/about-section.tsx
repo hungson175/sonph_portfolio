@@ -58,7 +58,7 @@ export function AboutSection() {
           <CardContent className="pt-6">
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               <p className="text-muted-foreground leading-relaxed">
-                I'm a Senior Software Engineer with 15+ years of experience spanning AI/ML, LLM applications, and full-stack
+                I'm a Senior AI Engineer with 15+ years of experience spanning AI/ML, LLM applications, and full-stack
                 development. My journey has taken me from building scalable platforms (Zing MP3 - pre-installed on Samsung Galaxy Y Vietnam)
                 to leading R&D teams that delivered 20% annual revenue growth at Zalo/VNG.
               </p>
