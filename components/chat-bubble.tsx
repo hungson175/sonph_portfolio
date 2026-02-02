@@ -12,7 +12,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { useIsMobile } from "@/components/ui/use-mobile"
-import { streamChatResponse } from "@/lib/chat-mock"
+import { streamChatResponse } from "@/lib/chat-api"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 
@@ -24,6 +24,7 @@ interface Message {
   content: string
   isError?: boolean
   thinkingSteps?: string[]
+  suggestions?: string[]
 }
 
 // --- Constants ---
@@ -267,6 +268,29 @@ function SuggestedChips({
   )
 }
 
+function DynamicSuggestedChips({
+  suggestions,
+  onSelect,
+}: {
+  suggestions: string[]
+  onSelect: (question: string) => void
+}) {
+  return (
+    <div className="flex flex-wrap gap-1.5 pl-8 pt-1 animate-in fade-in duration-500">
+      {suggestions.map((q) => (
+        <Badge
+          key={q}
+          variant="outline"
+          className="cursor-pointer hover:bg-accent transition-colors text-xs py-1 px-2"
+          onClick={() => onSelect(q)}
+        >
+          {q}
+        </Badge>
+      ))}
+    </div>
+  )
+}
+
 function ChatInput({
   value,
   onChange,
@@ -364,7 +388,10 @@ export function ChatBubble() {
         role: "user",
         content,
       }
-      setMessages((prev) => [...prev, userMsg])
+      setMessages((prev) =>
+        prev.map((m) => (m.suggestions ? { ...m, suggestions: undefined } : m))
+          .concat(userMsg)
+      )
       setInput("")
       setIsStreaming(true)
 
@@ -416,6 +443,17 @@ export function ChatBubble() {
                     : m
                 )
               )
+              break
+            case "suggestions":
+              if (event.suggestions?.length) {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantId
+                      ? { ...m, suggestions: event.suggestions }
+                      : m
+                  )
+                )
+              }
               break
             case "error":
               setMessages((prev) =>
@@ -469,11 +507,18 @@ export function ChatBubble() {
           >
             <div className="flex flex-col gap-3">
               {messages.map((msg) => (
-                <MessageBubble
-                  key={msg.id}
-                  message={msg}
-                  isThinking={msg.id === activeAssistantId && isStreaming && !msg.content}
-                />
+                <div key={msg.id}>
+                  <MessageBubble
+                    message={msg}
+                    isThinking={msg.id === activeAssistantId && isStreaming && !msg.content}
+                  />
+                  {msg.role === "assistant" && msg.suggestions?.length && !isStreaming ? (
+                    <DynamicSuggestedChips
+                      suggestions={msg.suggestions}
+                      onSelect={(q) => handleSend(q)}
+                    />
+                  ) : null}
+                </div>
               ))}
               {isStreaming && messages[messages.length - 1]?.role === "user" && (
                 <TypingIndicator />
