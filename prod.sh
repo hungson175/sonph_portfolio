@@ -11,6 +11,7 @@ fuser -k 3336/tcp 2>/dev/null || true
 
 echo "=== Stopping Cloudflare tunnel (prevents cache poisoning during build) ==="
 systemctl --user stop cloudflared 2>/dev/null || true
+pkill -f cloudflared 2>/dev/null || true
 sleep 1
 
 echo "=== Ensuring backend is running (needed for SSG build) ==="
@@ -52,9 +53,14 @@ if ! systemctl --user is-active --quiet portfolio-frontend; then
 fi
 echo "=== Frontend running on port 3336 ==="
 
-echo "=== Restarting Cloudflare tunnel ==="
+echo "=== Killing orphan cloudflared processes & cleaning stale connectors ==="
+pkill -f cloudflared 2>/dev/null || true
+sleep 1
+cloudflared tunnel cleanup mytunnel 2>/dev/null || true
+
+echo "=== Starting Cloudflare tunnel ==="
 systemctl --user start cloudflared
-sleep 2
+sleep 4
 
 if systemctl --user is-active --quiet cloudflared; then
   echo "=== Cloudflare tunnel active ==="
