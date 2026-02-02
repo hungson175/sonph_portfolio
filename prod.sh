@@ -4,13 +4,16 @@ set -e
 
 APP_DIR="/home/hungson175/dev/SonPH/my-portfolio/frontend"
 
-echo "=== Stopping frontend (backend stays up for SSG build) ==="
+echo "=== Stopping frontend service ==="
 systemctl --user stop portfolio-frontend 2>/dev/null || true
 sleep 1
 fuser -k 3336/tcp 2>/dev/null || true
+
+echo "=== Stopping Cloudflare tunnel (prevents cache poisoning during build) ==="
+systemctl --user stop cloudflared 2>/dev/null || true
 sleep 1
 
-echo "=== Ensuring backend is running ==="
+echo "=== Ensuring backend is running (needed for SSG build) ==="
 systemctl --user start portfolio-backend 2>/dev/null || true
 sleep 2
 
@@ -42,11 +45,21 @@ echo "=== Starting frontend service ==="
 systemctl --user start portfolio-frontend
 sleep 3
 
-if systemctl --user is-active --quiet portfolio-frontend; then
-  echo "=== Frontend running on port 3336 ==="
-  echo "=== https://portfolio.hungson175.com is live ==="
-else
+if ! systemctl --user is-active --quiet portfolio-frontend; then
   echo "=== ERROR: Frontend failed to start ==="
   journalctl --user -u portfolio-frontend --no-pager -n 20
   exit 1
+fi
+echo "=== Frontend running on port 3336 ==="
+
+echo "=== Restarting Cloudflare tunnel ==="
+systemctl --user start cloudflared
+sleep 2
+
+if systemctl --user is-active --quiet cloudflared; then
+  echo "=== Cloudflare tunnel active ==="
+  echo "=== https://portfolio.hungson175.com is live ==="
+else
+  echo "=== WARNING: Cloudflare tunnel failed to start ==="
+  journalctl --user -u cloudflared --no-pager -n 10
 fi
