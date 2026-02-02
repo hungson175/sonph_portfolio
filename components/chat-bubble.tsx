@@ -582,7 +582,9 @@ export function ChatBubble() {
           />
         </div>
       )}
-      <BubbleButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+      {!(isMobile && isOpen) && (
+        <BubbleButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+      )}
     </>
   )
 }
